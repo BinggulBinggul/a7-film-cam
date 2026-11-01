@@ -1,0 +1,26 @@
+﻿apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 16
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.custom.a7filmcam"
+        minSdkVersion 10
+        targetSdkVersion 10
+        versionCode 1
+        versionName "1.0"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation 'com.github.ma1co.OpenMemories-Framework:framework:-SNAPSHOT'
+    compileOnly 'com.github.ma1co.OpenMemories-Framework:stubs:-SNAPSHOT'
+}
