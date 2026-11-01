@@ -18,18 +18,25 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Accept Android SDK Licenses
+      - name: Setup Android SDK manually
         run: |
-          mkdir -p $ANDROID_HOME/licenses
-          echo "24333f8a43b68077bc123d9859318ef1f926701b" > $ANDROID_HOME/licenses/android-sdk-license
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_HOME/licenses/android-sdk-license
+          # 안드로이드 SDK 명령줄 도구 자동 다운로드 및 설치
+          mkdir -p $HOME/cmdline-tools
+          curl -o $HOME/cmdline-tools/tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q $HOME/cmdline-tools/tools.zip -d $HOME/cmdline-tools
+          mkdir -p $HOME/cmdline-tools/latest
+          mv $HOME/cmdline-tools/cmdline-tools/* $HOME/cmdline-tools/latest/
+          
+          # 환경변수 설정
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
-      - name: Install Android SDK Platform 16 & Build Tools
+      - name: Install SDK Platforms and Accept Licenses
         run: |
-          sdkmanager --install "platforms;android-16" "build-tools;30.0.3"
+          export ANDROID_HOME=$HOME/android-sdk
+          yes | $HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
+          $HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-16" "build-tools;30.0.3"
 
       - name: Build with Gradle
         uses: gradle/actions/setup-gradle@v4
